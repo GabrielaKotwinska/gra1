@@ -30,7 +30,6 @@ def main():
             Data.load();
             break;
         elif choice == '3':
-            while True:
                 create_menu();
                 sub_choice = input("Wybierz opcję (1-6) lub 'exit' aby wrócić do poprzedniego menu: ");
 

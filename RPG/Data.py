@@ -1,3 +1,4 @@
+from telnetlib import GA
 import Classes
 import Game
 import glob
@@ -160,7 +161,7 @@ def AddLocationToFile():
             print("Nieprawidłowa wartość, wpisz liczbę.");
 
     while True:    
-        event = input("Podaj ID wroga (lub wpisz 'exit' aby zakończyć): ");
+        event = input("Podaj ID wydarzenia (lub wpisz 'exit' aby zakończyć): ");
         if event.lower() == 'exit':
             break;
         if event.strip().isdigit():
@@ -183,7 +184,7 @@ def ImportEvent():
                 eventType = parts[2]
                 shopID = int(parts[3]) if parts[3].isdigit() else None
                 trapID = int(parts[4]) if parts[4].isdigit() else None
-                rewardID = int(parts[5]) if parts[5].isdigit() else None
+                rewardID = int(parts[4]) if parts[4].isdigit() else None
 
                 event = Classes.Event(name, description, Classes.EventType[eventType], shopID, trapID, rewardID)
                 eventsList.append(event)
@@ -360,6 +361,14 @@ def newGame():
             break;
         print("Nie podano wartosci");
     Game.chatacterName = NewName;
+
+    while True:
+        newDifficulty = input("Wybierz poziom trudności (easy, medium, hard): ").upper();
+        if newDifficulty in Classes.Difficulty.__members__:
+            break;
+        print("Niepoprawny poziom trudności (easy, medium, hard)");  
+    Game.difficulty = newDifficulty;
+    Game.saveName = save_name;
     saveGame(save_name);
     print(f"Utworzono nowy zapis: {save_name}");
     loadGame(save_name);
@@ -395,10 +404,14 @@ def saveGame(save_name):
         "attack": Game.attak,
         "exp": Game.exp,
         "level": Game.level,
+        "difficulty": Game.difficulty,
         "chatacterName": Game.chatacterName,
         "gold": Game.gold,
+        "arrmor": Game.arrmorID,
+        "weapon": Game.weaponID,
         "itemsId": Game.itemsId,  
-        "currentLocationId": Game.currentLocationId
+        "currentLocationId": Game.currentLocationId,
+        "save": Game.saveName
     }
 
     with open(save_name, "w") as file:
@@ -407,7 +420,7 @@ def saveGame(save_name):
     print(f"Stan gry zapisano w: {save_name}");
 
 def loadGame(save_name):
-    global maxHitPoints, hitPoints, defence, attack, exp, level, chatacterName, gold, itemsId, currentLocationId;
+    global maxHitPoints,hitPoints,defence,attack,exp,level,difficulty,chatacterName,gold,arrmorID,weaponID,itemsId,currentLocationId,saveName;
 
     with open(save_name, "r") as file:
         game_state = json.load(file);
@@ -418,11 +431,15 @@ def loadGame(save_name):
     attack = game_state["attack"];
     exp = game_state["exp"];
     level = game_state["level"];
+    difficulty = game_state["difficulty"];
     chatacterName = game_state["chatacterName"];
     gold = game_state["gold"]
+    weaponID = game_state["weapon"];
+    arrmorID = game_state["arrmor"];
     itemsId = game_state["itemsId"] ;
     currentLocationId = game_state["currentLocationId"];
+    saveName = game_state["save"]
     
-    Game.LoadStats(maxHitPoints, hitPoints, defence, attack, exp, level, chatacterName, gold, itemsId, currentLocationId);
+    Game.LoadStats(maxHitPoints,hitPoints,defence,attack,exp,level,difficulty,chatacterName,gold,arrmorID,weaponID,itemsId,currentLocationId,saveName);
     print(f"Stan gry wczytano z: {save_name}");
     Game.StartGame();

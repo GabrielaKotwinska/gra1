@@ -1,6 +1,11 @@
 #Classes.py
 from enum import Enum
 
+class Difficulty(Enum):
+    EASY = "easy"
+    MEDIUM = "medium"
+    HARD =  "hard"
+
 class Enemy:
     def __init__(self, name, hitPoints, attack, defence, expDrop):
         self.name = name;
